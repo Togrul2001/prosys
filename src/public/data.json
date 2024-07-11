@@ -1,0 +1,65 @@
+{
+    "students": [
+        {
+            "number": 1,
+            "firstName": "John",
+            "lastName": "Brown",
+            "classNumber": 10
+        },
+        {
+            "number": 2,
+            "firstName": "Jim",
+            "lastName": "Green",
+            "classNumber": 11
+        },
+        {
+            "number": 3,
+            "firstName": "Joe",
+            "lastName": "Black",
+            "classNumber": 12
+        }
+    ],
+    "lessons": [
+        {
+            "code": "MTH",
+            "name": "Mathematics",
+            "class": 10,
+            "teacherFirstName": "Alice",
+            "teacherLastName": "Johnson"
+        },
+        {
+            "code": "ENG",
+            "name": "English",
+            "class": 11,
+            "teacherFirstName": "Bob",
+            "teacherLastName": "Smith"
+        },
+        {
+            "code": "SCI",
+            "name": "Science",
+            "class": 12,
+            "teacherFirstName": "Carol",
+            "teacherLastName": "Williams"
+        }
+    ],
+    "exams": [
+        {
+            "lessonCode": "MTH",
+            "studentNumber": 10001,
+            "date": "2024-01-15",
+            "point": 85
+        },
+        {
+            "lessonCode": "ENG",
+            "studentNumber": 10002,
+            "date": "2024-01-16",
+            "point": 78
+        },
+        {
+            "lessonCode": "SCI",
+            "studentNumber": 10003,
+            "date": "2024-01-17",
+            "point": 90
+        }
+    ]
+}

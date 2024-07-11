@@ -1,6 +1,6 @@
 export interface Exam {
     lessonCode: string;
     studentNumber: number;
-    examDate: string;
+    date: string;
     point: number;
   }

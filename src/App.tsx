@@ -2,6 +2,9 @@ import React from 'react';
 import './App.css';
 import { createBrowserRouter, Outlet, RouterProvider, useNavigate } from 'react-router-dom';
 import SidebarMenu from './components/SidebarMenu';
+import LessonList from './pages/Lesson';
+import StudentList from './pages/Student';
+import ExamList from './pages/Exam';
 
 function MainLayout() {
   const navigate = useNavigate()
@@ -25,15 +28,15 @@ const routes = [
         children:[
           {
             path: "lessons",
-            element: <>Lessons</>
+            element: <LessonList />
           },
           {
             path: "students",
-            element: <>Students</>
+            element: <StudentList />
           },
           {
             path: "exams",
-            element: <>Exams</>
+            element: <ExamList />
           },
         ]
       },
