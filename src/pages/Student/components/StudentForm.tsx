@@ -22,7 +22,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ data, reFetchFunc }) => {
 
     const newStudent: Student = {
       _id: id,
-      number: data.students.length + 1,
+      number: (data.students?.length || 0) + 1,
       firstName: values.firstName,
       lastName: values.lastName,
       classNumber: values.classNumber
