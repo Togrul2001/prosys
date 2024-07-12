@@ -53,35 +53,45 @@ const LessonForm: React.FC<LessonFormProps> = ({ data, reFetchFunc }) => {
         <Form.Item
           name="code"
           label="Kod"
-          rules={[{ required: true, message: 'Please enter the lesson\'s code!' }]}
+          rules={[{ required: true, message: 'Please enter the lesson\'s code!' },
+            { max: 3, message: 'Kodun uzunluğu 3-dən artıq ola bilməz' }
+          ]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="name"
           label="Ad"
-          rules={[{ required: true, message: 'Please enter the lesson\'s name!' }]}
+          rules={[{ required: true, message: 'Please enter the lesson\'s name!' },
+            { max: 30, message: 'Adın uzunluğu 30-dan artıq ola bilməz' }
+          ]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="class"
           label="Sinif"
-          rules={[{ required: true, message: 'Please enter the lesson\'s class!' }]}
+          rules={[{ required: true, message: 'Please enter the lesson\'s class!' },
+            { max: 2, message: 'Sinifin uzunluğu 2-dən artıq ola bilməz' }
+          ]}
         >
           <Input type="number" />
         </Form.Item>
         <Form.Item
           name="teacherFirstName"
           label="Müəllim adı"
-          rules={[{ required: true, message: 'Please enter the lesson\'s first name!' }]}
+          rules={[{ required: true, message: 'Please enter the lesson\'s first name!' },
+            { max: 20, message: 'Adın uzunluğu 20-dan artıq ola bilməz' }
+          ]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="teacherLastName"
           label="Müəllim soyadı"
-          rules={[{ required: true, message: 'Please enter the lesson\'s last name!' }]}
+          rules={[{ required: true, message: 'Please enter the lesson\'s last name!' },
+            { max: 20, message: 'Soyadın uzunluğu 20-dan artıq ola bilməz' }
+          ]}
         >
           <Input />
         </Form.Item>

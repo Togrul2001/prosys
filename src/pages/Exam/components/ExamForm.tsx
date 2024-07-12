@@ -85,7 +85,9 @@ const ExamForm: React.FC<ExamFormProps> = ({ reFetchFunc }) => {
         <Form.Item
           name="point"
           label="Qiymət"
-          rules={[{ required: true, message: 'Please enter the exam\'s point!' }]}
+          rules={[{ required: true, message: 'Please enter the exam\'s point!' },
+            { max: 30, message: 'Qiymət uzunluğu 1-dən artıq ola bilməz' }
+          ]}
         >
           <Input type='number' />
         </Form.Item>

@@ -5,21 +5,20 @@ import { Student } from '../../../types/Student';
 
 interface StudentFormProps {
   data: any;
-  // setData: React.Dispatch<React.SetStateAction<Student[]>>;
-  reFetchFunc: any
+  reFetchFunc: any;
 }
 
 const StudentForm: React.FC<StudentFormProps> = ({ data, reFetchFunc }) => {
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  let id = useId()
+  let id = useId();
 
   const showModal = () => {
     setIsModalOpen(true);
   };
 
   const handleOk = () => {
-    const values: any = form.getFieldsValue()
+    const values: any = form.getFieldsValue();
 
     const newStudent: Student = {
       _id: id,
@@ -30,13 +29,12 @@ const StudentForm: React.FC<StudentFormProps> = ({ data, reFetchFunc }) => {
     };
 
     const updatedStudents = [...data?.students || [], newStudent];
-    
 
     localStorage.setItem('education', JSON.stringify({ ...data, students: updatedStudents }));
-    notification.success({message:"Yeni tələbə yaradıldı"})
+    notification.success({ message: "Yeni tələbə yaradıldı" });
     form.resetFields();
     setIsModalOpen(false);
-    reFetchFunc()
+    reFetchFunc();
   };
 
   const handleCancel = () => {
@@ -46,32 +44,40 @@ const StudentForm: React.FC<StudentFormProps> = ({ data, reFetchFunc }) => {
   return (
     <div>
       <Button type="primary" onClick={showModal}>+</Button>
-        <Modal title="Tələbə əlavə et" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+      <Modal title="Tələbə əlavə et" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
         <Form form={form} layout="vertical">
-        <Form.Item
-          name="firstName"
-          label="Ad"
-          rules={[{ required: true, message: 'Please enter the student\'s first name!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="lastName"
-          label="Soyad"
-          rules={[{ required: true, message: 'Please enter the student\'s last name!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="classNumber"
-          label="Sinif"
-          rules={[{ required: true, message: 'Please enter the student\'s class number!' }]}
-        >
-          <Input type="number" />
-        </Form.Item>
-      </Form>
-        </Modal>
-
+          <Form.Item
+            name="firstName"
+            label="Ad"
+            rules={[
+              { required: true, message: 'Please enter the student\'s first name!' },
+              { max: 30, message: 'Adın uzunluğu 30-dan artıq ola bilməz' }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="lastName"
+            label="Soyad"
+            rules={[
+              { required: true, message: 'Please enter the student\'s last name!' },
+              { max: 30, message: 'Soyadın uzunluğu 30-dan artıq ola bilməz' }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="classNumber"
+            label="Sinif"
+            rules={[
+              { required: true, message: 'Please enter the student\'s class number!' },
+              { max: 2, message: 'Sinif nömrəsi uzunluğu 2-dən artıq ola bilməz' }
+            ]}
+          >
+            <Input type="number" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
