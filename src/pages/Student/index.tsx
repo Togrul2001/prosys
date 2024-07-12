@@ -3,69 +3,71 @@ import { Button, Modal, Space, Table } from 'antd';
 import type { TableProps } from 'antd';
 import { Student } from '../../types/Student';
 import StudentForm from './components/StudentForm';
-import jsonData from "../../public/data.json";
+import { useEducationContext } from '../../contexts/EducationContext';
 
-const columns: TableProps<Student>['columns'] = [
-  {
-    title: 'Number',
-    dataIndex: 'number',
-    key: 'number',
-  },
-  {
-    title: 'First Name',
-    dataIndex: 'firstName',
-    key: 'firstName',
-    render: (text) => <a>{text}</a>,
-  },
-  {
-    title: 'Last Name',
-    dataIndex: 'lastName',
-    key: 'lastName',
-  },
-  {
-    title: 'Class Number',
-    dataIndex: 'classNumber',
-    key: 'classNumber',
-  },
-  {
-    title: 'Action',
-    key: 'action',
-    render: (_, record) => (
-      <Space size="middle">
-        {/* <a>Invite {record.firstName}</a> */}
-        <Button type='link' danger>Delete</Button>
-      </Space>
-    ),
-  },
-];
+const { confirm } = Modal;
 
 const StudentList: React.FC = () => {
-  const [data, setData] = useState<Student[]>([]);
+
+  const { data, setData, reFetchFunc } = useEducationContext();
   const [loading, setLoading] = useState<boolean>(false);
-  const [reFetch, setReFetch] = useState<boolean>(false)
+  
+  const handleDelete = (_id: string) => {
+    confirm({
+      title: 'Bu tələbəni silmək istədiyinizə əminsiniz?',
+      onOk() {
+        const updatedStudents = data.students.filter(student => student._id !== _id);
+        const updatedData = { ...data, students: updatedStudents };
+        setData(updatedData);
+        localStorage.setItem('education', JSON.stringify(updatedData));
+        reFetchFunc();
+      },
+      onCancel() {
+        console.log('Cancel');
+      }
+    });
+  };
 
-  useEffect(() => {
-    setLoading(true);
-    const educationData = JSON.parse(localStorage.getItem('education') || '{}');
-    const localDataStudents: Student[] = educationData.students || [];
-    const jsonDataStudents: Student[] = jsonData.students || [];
-
-    const combinedData = [...localDataStudents, ...jsonDataStudents];
-    setData(combinedData);
-    setLoading(false);
-  }, [reFetch]);
-
-  function reFetchFunc(){
-    setReFetch(!reFetch)
-  }
+  const columns: TableProps<Student>['columns'] = [
+    {
+      title: 'Nömrə',
+      dataIndex: 'number',
+      key: 'number',
+    },
+    {
+      title: 'Ad',
+      dataIndex: 'firstName',
+      key: 'firstName',
+      render: (text) => <a>{text}</a>,
+    },
+    {
+      title: 'Soyad',
+      dataIndex: 'lastName',
+      key: 'lastName',
+    },
+    {
+      title: 'Sinif nömrəsi',
+      dataIndex: 'classNumber',
+      key: 'classNumber',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_, record) => (
+        <Space size="middle">
+          <Button type='link' danger onClick={() => handleDelete(record._id)}>Delete</Button>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <>
       <div style={{ display: "flex", alignItems: "end", gap: "10px", padding: "20px" }}>
         <h1 style={{ margin: "0" }}>Tələbələr</h1>
-        <StudentForm data={data} reFetchFunc={reFetchFunc}/>
+        <StudentForm data={data} reFetchFunc={reFetchFunc} />
       </div>
-      <Table columns={columns} dataSource={data} loading={loading} />
+      <Table columns={columns} dataSource={data.students} loading={loading} />
     </>
   );
 }

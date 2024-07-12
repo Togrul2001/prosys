@@ -1,29 +1,59 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Modal, Space, Table, Tag } from 'antd';
+import React, { useState } from 'react';
+import { Button, Modal, Space, Table } from 'antd';
 import type { TableProps } from 'antd';
 import { Exam } from '../../types/Exam';
-import jsonData from "../../public/data.json";
 import ExamForm from './components/ExamForm';
+import { useEducationContext } from '../../contexts/EducationContext';
 
-const columns: TableProps<Exam>['columns'] = [
+const { confirm } = Modal;
+
+const ExamList: React.FC = () => {
+  const { data, setData, reFetchFunc } = useEducationContext();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleDelete = (examId: string) => {
+    confirm({
+      title: 'Bu imtahanı silmək istədiyinizə əminsiniz?',
+      onOk() {
+        const updatedExams = data.exams.filter(exam => exam._id !== examId);
+        const updatedData = { ...data, exams: updatedExams };
+        setData(updatedData);
+        localStorage.setItem('education', JSON.stringify(updatedData));
+        reFetchFunc();
+      },
+      onCancel() {
+        console.log('Cancel');
+      }
+    });
+  };
+
+  const columns: TableProps<Exam>['columns'] = [
     {
-      title: 'Lesson Code',
+      title: 'Dərs',
       dataIndex: 'lessonCode',
       key: 'lessonCode',
+      render: (_, dataObj) => {
+        const lesson = data.lessons.find((lesson) => lesson.code === dataObj.lessonCode);
+        return <p>{lesson ? lesson.name : 'Unknown Lesson'}</p>;
+      }
     },
     {
-      title: 'Student Number',
+      title: 'Tələbə',
       dataIndex: 'studentNumber',
       key: 'studentNumber',
+      render: (_, dataObj) => {
+        const student = data.students.find((student) => student.number === dataObj.studentNumber);
+        return <p>{student ? student.firstName : 'Unknown Student'}</p>;
+      }
     },
     {
-      title: 'Exam Date',
+      title: 'İmtahan tarixi',
       dataIndex: 'date',
       key: 'date',
       render: (text) => <span>{new Date(text).toLocaleDateString()}</span>,
     },
     {
-      title: 'Point',
+      title: 'Qiymət',
       dataIndex: 'point',
       key: 'point',
     },
@@ -32,40 +62,21 @@ const columns: TableProps<Exam>['columns'] = [
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <a>View Details</a>
-          <a>Delete</a>
+          <Button type='link' danger onClick={() => handleDelete(record._id)}>Delete</Button>
         </Space>
       ),
     },
   ];
 
-
-const ExamList: React.FC = () => {
-  const [data, setData] = useState<Exam[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [reFetch, setReFetch] = useState<boolean>(false)
-
-  useEffect(() => {
-    setLoading(true);
-    const educationData = JSON.parse(localStorage.getItem('education') || '{}');
-    const localDataExams: Exam[] = educationData.exams || [];
-    const jsonDataExams: Exam[] = jsonData.exams || [];
-
-    const combinedData = [...localDataExams, ...jsonDataExams];
-    setData(combinedData);
-    setLoading(false);
-  }, [reFetch]);
-
-  function reFetchFunc(){
-    setReFetch(!reFetch)
-  }
-    return <>
-      <div style={{display:"flex", alignItems:"end", gap:"10px", padding:"20px"}}>
-        <h1 style={{margin:"0"}}>İmtahanlar</h1>
-        <ExamForm data={data} reFetchFunc={reFetchFunc}/>
+  return (
+    <>
+      <div style={{ display: "flex", alignItems: "end", gap: "10px", padding: "20px" }}>
+        <h1 style={{ margin: "0" }}>İmtahanlar</h1>
+        <ExamForm reFetchFunc={reFetchFunc} />
       </div>
-      <Table columns={columns} dataSource={data} />
+      <Table columns={columns} dataSource={data.exams} loading={loading} />
     </>
+  );
 }
 
 export default ExamList;

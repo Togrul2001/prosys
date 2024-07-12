@@ -2,10 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { Button, Modal, Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { Lesson } from '../../types/Lesson';
-import jsonData from "../../public/data.json";
 import LessonForm from './components/LessonForm';
+import { useEducationContext } from '../../contexts/EducationContext';
 
-const columns: TableProps<Lesson>['columns'] = [
+const { confirm } = Modal;
+
+const LessonList: React.FC = () => {
+  const { data, setData, reFetchFunc } = useEducationContext();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleDelete = (_id: string) => {
+    confirm({
+      title: 'Bu dərsi silmək istədiyinizə əminsiniz?',
+      onOk() {
+        const updatedLessons = data.lessons.filter(lesson => lesson._id !== _id);
+        const updatedData = { ...data, lessons: updatedLessons };
+        setData(updatedData);
+        localStorage.setItem('education', JSON.stringify(updatedData));
+        reFetchFunc();
+      },
+      onCancel() {
+        console.log('Cancel');
+      }
+    });
+  };
+
+  const columns: TableProps<Lesson>['columns'] = [
     {
       title: 'Kod',
       dataIndex: 'code',
@@ -37,41 +59,21 @@ const columns: TableProps<Lesson>['columns'] = [
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          {/* <a>View {record.name}</a> */}
-          <a>Delete</a>
+          <Button type='link' danger onClick={() => handleDelete(record._id)}>Delete</Button>
         </Space>
       ),
     },
   ];
 
-
-const LessonList: React.FC = () => {
-  const [data, setData] = useState<Lesson[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [reFetch, setReFetch] = useState<boolean>(false)
-
-  useEffect(() => {
-    setLoading(true);
-    const educationData = JSON.parse(localStorage.getItem('education') || '{}');
-    const localDataLessons: Lesson[] = educationData.lessons || [];
-    const jsonDataLessons: Lesson[] = jsonData.lessons || [];
-
-    const combinedData = [...localDataLessons, ...jsonDataLessons];
-    setData(combinedData);
-    setLoading(false);
-  }, [reFetch]);
-
-  function reFetchFunc(){
-    setReFetch(!reFetch)
-  }
-
-    return <>
-      <div style={{display:"flex", alignItems:"end", gap:"10px", padding:"20px"}}>
-        <h1 style={{margin:"0"}}>Dərslər</h1>
-        <LessonForm data={data} reFetchFunc={reFetchFunc}/>
+  return (
+    <>
+      <div style={{ display: "flex", alignItems: "end", gap: "10px", padding: "20px" }}>
+        <h1 style={{ margin: "0" }}>Dərslər</h1>
+        <LessonForm data={data} reFetchFunc={reFetchFunc} />
       </div>
-      <Table columns={columns} dataSource={data} />
+      <Table columns={columns} dataSource={data.lessons} loading={loading} />
     </>
+  );
 }
 
 export default LessonList;

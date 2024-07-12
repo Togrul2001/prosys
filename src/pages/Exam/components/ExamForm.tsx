@@ -1,18 +1,21 @@
 // src/components/StudentForm.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { Form, Input, Button, Modal, notification, Select, DatePicker } from 'antd';
 import { Student } from '../../../types/Student';
 import { Exam } from '../../../types/Exam';
+import { useEducationContext } from '../../../contexts/EducationContext';
+
 
 interface ExamFormProps {
-  data: Exam[];
   // setData: React.Dispatch<React.SetStateAction<Student[]>>;
   reFetchFunc: any
 }
 
-const ExamForm: React.FC<ExamFormProps> = ({ data, reFetchFunc }) => {
+const ExamForm: React.FC<ExamFormProps> = ({ reFetchFunc }) => {
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data, setData } = useEducationContext();
+  let id = useId()
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -20,19 +23,19 @@ const ExamForm: React.FC<ExamFormProps> = ({ data, reFetchFunc }) => {
 
   const handleOk = () => {
     const values: any = form.getFieldsValue()
-    const educationData = JSON.parse(localStorage.getItem('education') || '{}');
 
     const newExam: Exam = {
-        lessonCode: "1",
-        studentNumber: 1,
-        date: "1",
-        point: 1
+        _id: id,
+        lessonCode: values.lessonCode,
+        studentNumber: values.studentNumber,
+        date: values.date,
+        point: values.point
     };
 
-    const updatedExams = [...educationData.exams||[],newExam];
+    const updatedExams = [...data?.exams || [], newExam];
     
 
-    localStorage.setItem('education', JSON.stringify({ ...educationData, exams: updatedExams }));
+    localStorage.setItem('education', JSON.stringify({ ...data, exams: updatedExams }));
     notification.success({message:"Yeni imtahan yaradıldı"})
     form.resetFields();
     setIsModalOpen(false);
@@ -42,6 +45,12 @@ const ExamForm: React.FC<ExamFormProps> = ({ data, reFetchFunc }) => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  useEffect(()=>{
+    const educationData = JSON.parse(localStorage.getItem('education') || '{}');
+    setData(educationData)
+    
+  },[])
 
   return (
     <div>
@@ -53,14 +62,18 @@ const ExamForm: React.FC<ExamFormProps> = ({ data, reFetchFunc }) => {
           label="Dərs kodu"
           rules={[{ required: true, message: 'Please enter the lesson\'s code!' }]}
         >
-          <Select />
+          <Select options={data?.lessons?.map((lesson: any)=>{
+            return {label:lesson.name, value:lesson.code}
+          })}/>
         </Form.Item>
         <Form.Item
           name="studentNumber"
           label="Şagirdin nömrəsi"
           rules={[{ required: true, message: 'Please enter the student\'s number!' }]}
         >
-          <Select />
+          <Select options={data?.students?.map((student: any)=>{
+            return {label:`${student.firstName} ${student.lastName}`, value:student.number}
+          })}/>
         </Form.Item>
         <Form.Item
           name="date"

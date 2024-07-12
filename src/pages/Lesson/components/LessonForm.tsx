@@ -1,11 +1,11 @@
 // src/components/StudentForm.tsx
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import { Form, Input, Button, Modal, notification } from 'antd';
 import { Student } from '../../../types/Student';
 import { Lesson } from '../../../types/Lesson';
 
 interface LessonFormProps {
-  data: Lesson[];
+  data: any;
   // setData: React.Dispatch<React.SetStateAction<Student[]>>;
   reFetchFunc: any
 }
@@ -13,6 +13,7 @@ interface LessonFormProps {
 const LessonForm: React.FC<LessonFormProps> = ({ data, reFetchFunc }) => {
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  let id = useId()
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -20,9 +21,9 @@ const LessonForm: React.FC<LessonFormProps> = ({ data, reFetchFunc }) => {
 
   const handleOk = () => {
     const values: any = form.getFieldsValue()
-    const educationData = JSON.parse(localStorage.getItem('education') || '{}');
 
     const newLesson: Lesson = {
+      _id: id,
       code: values.code,
       name: values.name,
       class: values.class,
@@ -30,10 +31,10 @@ const LessonForm: React.FC<LessonFormProps> = ({ data, reFetchFunc }) => {
       teacherLastName: values.teacherLastName
     };
 
-    const updatedLessons = [...educationData.lessons || [], newLesson];
+    const updatedLessons = [...data?.lessons || [], newLesson];
     
 
-    localStorage.setItem('education', JSON.stringify({ ...educationData, lessons: updatedLessons }));
+    localStorage.setItem('education', JSON.stringify({ ...data, lessons: updatedLessons }));
     notification.success({message:"Yeni dərs yaradıldı"})
     form.resetFields();
     setIsModalOpen(false);

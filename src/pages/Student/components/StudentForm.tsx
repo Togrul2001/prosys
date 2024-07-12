@@ -1,10 +1,10 @@
 // src/components/StudentForm.tsx
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import { Form, Input, Button, Modal, notification } from 'antd';
 import { Student } from '../../../types/Student';
 
 interface StudentFormProps {
-  data: Student[];
+  data: any;
   // setData: React.Dispatch<React.SetStateAction<Student[]>>;
   reFetchFunc: any
 }
@@ -12,6 +12,7 @@ interface StudentFormProps {
 const StudentForm: React.FC<StudentFormProps> = ({ data, reFetchFunc }) => {
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  let id = useId()
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -19,19 +20,19 @@ const StudentForm: React.FC<StudentFormProps> = ({ data, reFetchFunc }) => {
 
   const handleOk = () => {
     const values: any = form.getFieldsValue()
-    const educationData = JSON.parse(localStorage.getItem('education') || '{}');
 
     const newStudent: Student = {
-      number: data.length + 1,
+      _id: id,
+      number: data.students.length + 1,
       firstName: values.firstName,
       lastName: values.lastName,
       classNumber: values.classNumber
     };
 
-    const updatedStudents = [...educationData.students||[],newStudent];
+    const updatedStudents = [...data?.students || [], newStudent];
     
 
-    localStorage.setItem('education', JSON.stringify({ ...educationData, students: updatedStudents }));
+    localStorage.setItem('education', JSON.stringify({ ...data, students: updatedStudents }));
     notification.success({message:"Yeni tələbə yaradıldı"})
     form.resetFields();
     setIsModalOpen(false);
@@ -49,21 +50,21 @@ const StudentForm: React.FC<StudentFormProps> = ({ data, reFetchFunc }) => {
         <Form form={form} layout="vertical">
         <Form.Item
           name="firstName"
-          label="First Name"
+          label="Ad"
           rules={[{ required: true, message: 'Please enter the student\'s first name!' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="lastName"
-          label="Last Name"
+          label="Soyad"
           rules={[{ required: true, message: 'Please enter the student\'s last name!' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="classNumber"
-          label="Class Number"
+          label="Sinif"
           rules={[{ required: true, message: 'Please enter the student\'s class number!' }]}
         >
           <Input type="number" />
